@@ -46,5 +46,4 @@ bin/
 obj/
 
 # Local VPM test artifacts (do not commit)
-/index.json
 *.zip
