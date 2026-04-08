@@ -1,0 +1,11 @@
+{
+	"name": "Mel Profile Applier",
+	"id": "mememelmelmel.profile-applier",
+	"url": "https://mememelmelmel.github.io/profile-applier/index.json",
+	"author": "mememelmelmel",
+	"packages": {
+		"mememelmelmel.profile-applier": {
+			"versions": {}
+		}
+	}
+}
