@@ -1,0 +1,50 @@
+# Allowlist: deny everything except permitted types.
+# This prevents accidentally committing paid assets (meshes, textures, etc.).
+*
+
+# Allow directories (required to recurse into subdirectories)
+!*/
+
+# Re-ignore dot directories (only explicitly allowed ones below are tracked)
+.*/
+
+# Allowed file types
+!*.cs
+!*.asmdef
+!*.json
+!*.md
+!*.meta
+!*.txt
+
+# Allowed file types (CI/CD)
+!*.yml
+
+# Allowed special files
+!.gitignore
+!.gitattributes
+!.githooks/
+!.githooks/*
+!.github/
+!.github/**
+
+# Allow dotnet local tool manifest
+!.config/
+!.config/dotnet-tools.json
+
+# Allow CSharpier config
+!.csharpierrc.json
+
+# Allow editor config (shared coding style rules, equivalent to ESLint config)
+!.editorconfig
+
+# Allow Website directory (VPM listing template files)
+!Website/
+!Website/**
+
+# Build artifacts (C# compiler output)
+bin/
+obj/
+
+# Local VPM test artifacts (do not commit)
+/index.json
+*.zip

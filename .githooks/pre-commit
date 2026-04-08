@@ -1,0 +1,37 @@
+#!/bin/sh
+# pre-commit hook for mememelmelmel.profile-applier
+#
+# 1. Allowlist guard  — blocks non-permitted file types
+# 2. JSON format      — auto-formats staged .json files with Biome
+
+# ── 1. Allowlist ──────────────────────────────────────────────────────────────
+ALLOWED='\.(cs|asmdef|json|md|meta|txt|gitignore|gitattributes|yml|editorconfig)$'
+ALLOWED_NAMES='^(LICENSE)$'
+ALLOWED_PATHS='^(\.githooks/|Website/)'
+
+BLOCKED=$(git diff --cached --name-only | grep -vE "$ALLOWED" | grep -vE "$ALLOWED_NAMES" | grep -vE "$ALLOWED_PATHS")
+if [ -n "$BLOCKED" ]; then
+  echo ""
+  echo "ERROR: Commit blocked — non-permitted file types detected."
+  echo "These files are NOT allowed in this repository:"
+  echo "$BLOCKED" | sed 's/^/  /'
+  echo ""
+  echo "Permitted extensions: .json  .md  .meta  .txt  .gitignore  .gitattributes"
+  echo ""
+  echo "If you are absolutely sure, bypass with: git commit --no-verify"
+  exit 1
+fi
+
+# ── 2. JSON format with Biome ─────────────────────────────────────────────────
+STAGED_JSON=$(git diff --cached --name-only | grep '\.json$')
+if [ -z "$STAGED_JSON" ]; then
+  exit 0
+fi
+
+if ! echo "$STAGED_JSON" | xargs -d '\n' biome format --write; then
+  echo ""
+  echo "Biome reported errors in the JSON files above. Fix them and re-stage."
+  exit 1
+fi
+
+echo "$STAGED_JSON" | xargs -d '\n' git add

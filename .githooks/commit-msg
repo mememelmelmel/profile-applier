@@ -1,0 +1,32 @@
+#!/bin/sh
+# commit-msg hook for mememelmelmel.hair-profiles
+#
+# 1. Conventional Commits — validates message format: <type>[scope]: <description>
+
+# ── 1. Conventional Commits ───────────────────────────────────────────────────
+COMMIT_MSG_FILE="$1"
+COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
+
+# Strip comment lines (injected by Git) and blank lines, then take the subject
+SUBJECT=$(echo "$COMMIT_MSG" | grep -v '^#' | sed '/^[[:space:]]*$/d' | head -1)
+
+TYPES='feat|fix|improve|docs|refactor|revert|chore'
+PATTERN="^($TYPES)(\([^)]+\))?: .+"
+
+if ! echo "$SUBJECT" | grep -qE "$PATTERN"; then
+  echo ""
+  echo "ERROR: Commit blocked — message does not follow Conventional Commits format."
+  echo ""
+  echo "  Expected:  <type>[optional scope]: <description>"
+  echo "  Got:       $SUBJECT"
+  echo ""
+  echo "  Valid types: feat  fix  improve  docs  refactor  revert  chore"
+  echo ""
+  echo "  Examples:"
+  echo "    feat: add blonde hair profile"
+  echo "    fix(shader): correct normal map intensity"
+  echo "    chore: bump package version to 1.2.0"
+  echo ""
+  echo "If you are absolutely sure, bypass with: git commit --no-verify"
+  exit 1
+fi
