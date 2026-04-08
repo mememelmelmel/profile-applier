@@ -44,6 +44,8 @@
 # Build artifacts (C# compiler output)
 bin/
 obj/
+*.csproj
+*.csproj.meta
 
 # Local VPM test artifacts (do not commit)
 *.zip
