@@ -5,7 +5,25 @@
 	"author": "mememelmelmel",
 	"packages": {
 		"mememelmelmel.profile-applier": {
-			"versions": {}
+			"versions": {
+				"1.0.0": {
+					"name": "mememelmelmel.profile-applier",
+					"version": "1.0.0",
+					"displayName": "Mel Profile Applier",
+					"description": "Apply and export prefab override profiles as JSON.",
+					"unity": "2022.3",
+					"author": {
+						"name": "mememelmelmel",
+						"url": "https://github.com/mememelmelmel"
+					},
+					"url": "https://github.com/mememelmelmel/profile-applier/releases/download/1.0.0/mememelmelmel.profile-applier-1.0.0.zip",
+					"zipSHA256": "fee5aeb275479c3a8c41919273656c5bb3ef2f790090079f110784b309a7ddc3",
+					"repo": "https://mememelmelmel.github.io/profile-applier/index.json",
+					"license": "MIT",
+					"dependencies": {},
+					"vpmDependencies": {}
+				}
+			}
 		}
 	}
 }
