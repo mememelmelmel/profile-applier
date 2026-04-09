@@ -10,7 +10,7 @@ COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
 # Strip comment lines (injected by Git) and blank lines, then take the subject
 SUBJECT=$(echo "$COMMIT_MSG" | grep -v '^#' | sed '/^[[:space:]]*$/d' | head -1)
 
-TYPES='feat|fix|improve|docs|refactor|revert|chore'
+TYPES='feat|fix|improve|docs|refactor|revert|chore|release'
 PATTERN="^($TYPES)(\([^)]+\))?: .+"
 
 if ! echo "$SUBJECT" | grep -qE "$PATTERN"; then
@@ -20,7 +20,7 @@ if ! echo "$SUBJECT" | grep -qE "$PATTERN"; then
   echo "  Expected:  <type>[optional scope]: <description>"
   echo "  Got:       $SUBJECT"
   echo ""
-  echo "  Valid types: feat  fix  improve  docs  refactor  revert  chore"
+  echo "  Valid types: feat  fix  improve  docs  refactor  revert  chore  release"
   echo ""
   echo "  Examples:"
   echo "    feat: add blonde hair profile"
