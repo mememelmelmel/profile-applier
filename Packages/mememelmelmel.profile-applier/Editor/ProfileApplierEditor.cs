@@ -13,10 +13,12 @@ namespace Mememelmelmel.ProfileApplier
         private TextAsset? _lastBundleJson;
         private string _search = "";
         private bool _dropdownOpen;
+        private bool _focusSearch;
         private Vector2 _scroll;
 
         public override void OnInspectorGUI()
         {
+            if (target == null) return;
             serializedObject.Update();
 
             var applier = (ProfileApplier)target;
@@ -24,19 +26,26 @@ namespace Mememelmelmel.ProfileApplier
             // ── Bundle JSON field ──────────────────────────────────────────────
             EditorGUI.BeginChangeCheck();
             applier.BundleJson = (TextAsset?)EditorGUILayout.ObjectField(
-                "Bundle JSON",
+                "Profile Bundle",
                 applier.BundleJson,
                 typeof(TextAsset),
                 allowSceneObjects: false
             );
-            if (EditorGUI.EndChangeCheck() || applier.BundleJson != _lastBundleJson)
+            bool bundleChanged = EditorGUI.EndChangeCheck();
+
+            // Sync the key list whenever BundleJson differs from the cached value
+            // (e.g. on first Inspector open). Only mark dirty when the user explicitly
+            // changed the field — otherwise opening the Inspector would dirty the asset
+            // and cause it to resurrect after deletion.
+            if (bundleChanged || applier.BundleJson != _lastBundleJson)
             {
                 _lastBundleJson = applier.BundleJson;
                 _keys = applier.BundleJson != null
                     ? ProfileHelper.GetBundleKeys(applier.BundleJson.text)
                     : null;
                 _dropdownOpen = false;
-                EditorUtility.SetDirty(target);
+                if (bundleChanged)
+                    EditorUtility.SetDirty(target);
             }
 
             // ── Avatar key searchable dropdown ─────────────────────────────────
@@ -55,23 +64,16 @@ namespace Mememelmelmel.ProfileApplier
                     : applier.AvatarKey;
 
                 if (GUILayout.Button(displayLabel, EditorStyles.popup))
+                {
                     _dropdownOpen = !_dropdownOpen;
+                    if (_dropdownOpen)
+                        _focusSearch = true;
+                }
 
                 EditorGUILayout.EndHorizontal();
 
                 if (_dropdownOpen)
                     DrawDropdown(applier);
-            }
-
-            EditorGUILayout.Space();
-
-            // ── Apply button ───────────────────────────────────────────────────
-            using (new EditorGUI.DisabledScope(
-                applier.BundleJson == null || string.IsNullOrEmpty(applier.AvatarKey)
-            ))
-            {
-                if (GUILayout.Button("Apply in Editor"))
-                    ApplyProfile(applier);
             }
 
             serializedObject.ApplyModifiedProperties();
@@ -84,7 +86,14 @@ namespace Mememelmelmel.ProfileApplier
 
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 
+            GUI.SetNextControlName("ProfileApplierSearch");
             _search = EditorGUILayout.TextField("Search", _search);
+            if (_focusSearch)
+            {
+                EditorGUI.FocusTextInControl("ProfileApplierSearch");
+                if (Event.current.type == EventType.Repaint)
+                    _focusSearch = false;
+            }
 
             _scroll = EditorGUILayout.BeginScrollView(_scroll, GUILayout.MaxHeight(200));
             foreach (var key in _keys)
@@ -101,6 +110,7 @@ namespace Mememelmelmel.ProfileApplier
                     _dropdownOpen = false;
                     _search = "";
                     EditorUtility.SetDirty(target);
+                    ApplyProfile(applier);
                 }
             }
             EditorGUILayout.EndScrollView();
@@ -127,42 +137,25 @@ namespace Mememelmelmel.ProfileApplier
                 return;
             }
 
-            var prefabAsset = PrefabUtility.GetCorrespondingObjectFromOriginalSource(
-                applier.gameObject
-            );
-            var prefabPath = prefabAsset != null
-                ? AssetDatabase.GetAssetPath(prefabAsset)
-                : null;
-
             // Save component state so it survives RevertAllOverrides
             var bundleJson = applier.BundleJson;
             var avatarKey = applier.AvatarKey;
 
-            if (!string.IsNullOrEmpty(prefabPath))
-            {
-                using var scope = new PrefabUtility.EditPrefabContentsScope(prefabPath);
-                var root = scope.prefabContentsRoot;
-                ProfileHelper.ApplyEntryToPrefab(root, entry);
+            // Always apply directly to applier.gameObject.
+            //
+            // - Prefab Edit Mode: the Prefab Stage owns saving; applying directly is correct.
+            // - Scene instance: we apply as scene-level overrides only. Using
+            //   EditPrefabContentsScope here would (a) write back to the prefab asset
+            //   unexpectedly and (b) trigger a reimport that invalidates this Editor's
+            //   target, causing SerializedObjectNotCreatableException.
+            ProfileHelper.ApplyEntryToPrefab(applier.gameObject, entry);
 
-                // Re-attach ProfileApplier if it was removed by RevertAllOverrides
-                var comp = root.GetComponent<ProfileApplier>()
-                    ?? root.AddComponent<ProfileApplier>();
-                comp.BundleJson = bundleJson;
-                comp.AvatarKey = avatarKey;
-            }
-            else
-            {
-                // Scene instance: apply directly
-                ProfileHelper.ApplyEntryToPrefab(applier.gameObject, entry);
-
-                var comp = applier.gameObject.GetComponent<ProfileApplier>()
-                    ?? applier.gameObject.AddComponent<ProfileApplier>();
-                comp.BundleJson = bundleJson;
-                comp.AvatarKey = avatarKey;
-            }
+            var comp = applier.gameObject.GetComponent<ProfileApplier>()
+                ?? applier.gameObject.AddComponent<ProfileApplier>();
+            comp.BundleJson = bundleJson;
+            comp.AvatarKey = avatarKey;
 
             AssetDatabase.SaveAssets();
-            EditorUtility.DisplayDialog("Profile Applier", "Profile applied.", "OK");
         }
     }
 }

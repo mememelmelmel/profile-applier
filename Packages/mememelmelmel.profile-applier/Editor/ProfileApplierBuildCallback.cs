@@ -7,42 +7,21 @@ using VRC.SDKBase.Editor.BuildPipeline;
 namespace Mememelmelmel.ProfileApplier
 {
     /// <summary>
-    /// Applies hair profiles and removes ProfileApplier components before VRC upload.
-    /// Runs before VRC SDK validation, so the component is never present during upload checks.
+    /// Removes ProfileApplier components before VRC upload.
+    /// Profile values are already baked into the Prefab via Apply in Editor,
+    /// so no re-application is needed at build time.
     /// </summary>
     public class ProfileApplierBuildCallback : IVRCSDKPreprocessAvatarCallback
     {
-        // Run early so other preprocessors see the applied values
-        public int callbackOrder => -1000;
+        public int callbackOrder => 0;
 
         public bool OnPreprocessAvatar(GameObject avatarRoot)
         {
+            // Profile values are already applied to the Prefab via Apply in Editor.
+            // The only job here is to remove the component from the build copy so it
+            // doesn't appear in the uploaded avatar.
             foreach (var applier in avatarRoot.GetComponentsInChildren<ProfileApplier>(true))
-            {
-                if (applier.BundleJson == null || string.IsNullOrEmpty(applier.AvatarKey))
-                {
-                    Object.DestroyImmediate(applier);
-                    continue;
-                }
-
-                if (!ProfileHelper.TryParseBundleEntry(
-                    applier.BundleJson.text,
-                    applier.AvatarKey,
-                    out var entry
-                ) || entry == null)
-                {
-                    Debug.LogWarning(
-                        $"[ProfileApplier] Avatar key \"{applier.AvatarKey}\" not found in bundle "
-                            + $"on \"{applier.gameObject.name}\". Skipping.",
-                        applier.gameObject
-                    );
-                    Object.DestroyImmediate(applier);
-                    continue;
-                }
-
-                ProfileHelper.ApplyEntryToPrefab(applier.gameObject, entry);
                 Object.DestroyImmediate(applier);
-            }
 
             return true;
         }

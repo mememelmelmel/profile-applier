@@ -102,6 +102,39 @@ namespace Mememelmelmel.ProfileApplier
                     InteractionMode.AutomatedAction);
         }
 
+        /// <summary>
+        /// Applies a profile entry directly to a plain GameObject (no Prefab API calls).
+        /// Use this in build callbacks where the target is not a Prefab instance.
+        /// </summary>
+        public static void ApplyEntryToInstance(GameObject root, PresetEntry entry)
+        {
+            if (entry.Overrides != null)
+                ApplyPropertyDict(root, entry.Overrides, addIfMissing: false);
+
+            if (entry.AddedComponents != null)
+                ApplyPropertyDict(root, entry.AddedComponents, addIfMissing: true);
+
+            if (entry.RemovedComponents != null)
+            {
+                foreach (var (goPath, typeNames) in entry.RemovedComponents)
+                {
+                    var go = FindGameObjectByPath(root, goPath);
+                    if (go == null)
+                        continue;
+
+                    foreach (var typeName in typeNames)
+                    {
+                        var type = FindTypeByName(typeName);
+                        if (type == null)
+                            continue;
+                        var comp = go.GetComponent(type);
+                        if (comp != null)
+                            Object.DestroyImmediate(comp);
+                    }
+                }
+            }
+        }
+
         public static void ApplyEntryToPrefab(GameObject root, PresetEntry entry)
         {
             RevertAllOverrides(root);

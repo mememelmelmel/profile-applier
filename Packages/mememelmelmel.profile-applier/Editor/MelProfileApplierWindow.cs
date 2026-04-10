@@ -23,21 +23,21 @@ namespace Mememelmelmel.ProfileApplier
         private void OnGUI()
         {
             _prefab = (GameObject)
-                EditorGUILayout.ObjectField("Prefab", _prefab, typeof(GameObject), false);
+                EditorGUILayout.ObjectField("Target Prefab", _prefab, typeof(GameObject), false);
             _profile = (TextAsset)
-                EditorGUILayout.ObjectField("Profile", _profile, typeof(TextAsset), false);
+                EditorGUILayout.ObjectField("Profile JSON", _profile, typeof(TextAsset), false);
 
             EditorGUILayout.Space(4f);
 
             EditorGUILayout.BeginHorizontal();
 
             EditorGUI.BeginDisabledGroup(_prefab == null || _profile == null);
-            if (GUILayout.Button("Apply Profile"))
+            if (GUILayout.Button("Apply to Prefab"))
                 ApplyProfile();
             EditorGUI.EndDisabledGroup();
 
             EditorGUI.BeginDisabledGroup(_prefab == null);
-            if (GUILayout.Button("Export Profile"))
+            if (GUILayout.Button("Export from Prefab"))
                 ExportProfile();
             EditorGUI.EndDisabledGroup();
 
