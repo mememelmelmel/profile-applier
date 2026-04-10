@@ -12,10 +12,7 @@ Add the URL above in VCC → Settings → Packages → Add Repository.
 
 ## Overview
 
-A Unity Editor tool for managing and sharing Prefab Variant Overrides as JSON.
-
-- **Export** — Saves the Overrides of a Prefab Variant as a JSON file.
-- **Apply** — Applies a JSON file (in the exported format) as Overrides to any Prefab Variant.
+A Unity Editor tool for saving and sharing Prefab Variant Overrides as JSON.
 
 ---
 
@@ -51,10 +48,7 @@ When uploading to VRChat, the ProfileApplier component is automatically removed 
 
 ## 概要
 
-Prefab Variant の Overrides を JSON で管理・共有するための Unity Editor ツールです。
-
-- **エクスポート** — Prefab Variant の Overrides 項目を JSON ファイルとして出力します。
-- **適用** — 出力フォーマットで記載された JSON を、任意の Prefab Variant に Overrides として適用します。
+Prefab Variant の Overrides を JSON として保存・共有するための Unity Editor ツールです。
 
 ---
 
