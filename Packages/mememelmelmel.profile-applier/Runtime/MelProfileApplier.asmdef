@@ -1,8 +1,8 @@
 {
-    "name": "MelProfileApplier.Editor",
+    "name": "MelProfileApplier",
     "rootNamespace": "Mememelmelmel.ProfileApplier",
-    "references": ["MelProfileApplier"],
-    "includePlatforms": ["Editor"],
+    "references": [],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

@@ -39,6 +39,55 @@ namespace Mememelmelmel.ProfileApplier
             }
         }
 
+        /// <summary>
+        /// Parses a bundle JSON and returns all avatar keys, or null on error.
+        /// </summary>
+        public static System.Collections.Generic.IReadOnlyList<string>? GetBundleKeys(
+            string bundleJson
+        )
+        {
+            try
+            {
+                var dict =
+                    JsonConvert.DeserializeObject<
+                        System.Collections.Generic.Dictionary<string, object>
+                    >(bundleJson);
+                return dict != null
+                    ? new System.Collections.Generic.List<string>(dict.Keys)
+                    : null;
+            }
+            catch (JsonException)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Parses a bundle JSON and extracts the PresetEntry for the given avatar key.
+        /// </summary>
+        public static bool TryParseBundleEntry(
+            string bundleJson,
+            string avatarKey,
+            out PresetEntry? entry
+        )
+        {
+            entry = null;
+            try
+            {
+                var dict =
+                    JsonConvert.DeserializeObject<
+                        System.Collections.Generic.Dictionary<string, PresetEntry>
+                    >(bundleJson);
+                if (dict == null || !dict.TryGetValue(avatarKey, out entry))
+                    return false;
+                return entry != null;
+            }
+            catch (JsonException)
+            {
+                return false;
+            }
+        }
+
         private static void RevertAllOverrides(GameObject root)
         {
             PrefabUtility.SetPropertyModifications(root, new PropertyModification[0]);

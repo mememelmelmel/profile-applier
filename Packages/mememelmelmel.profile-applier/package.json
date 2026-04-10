@@ -1,6 +1,6 @@
 {
 	"name": "mememelmelmel.profile-applier",
-	"version": "1.0.1",
+	"version": "1.1.0",
 	"displayName": "Mel Profile Applier",
 	"description": "Apply and export prefab override profiles as JSON.",
 	"unity": "2022.3",
@@ -8,7 +8,7 @@
 		"name": "mememelmelmel",
 		"url": "https://github.com/mememelmelmel"
 	},
-	"url": "https://github.com/mememelmelmel/profile-applier/releases/download/1.0.1/mememelmelmel.profile-applier-1.0.1.zip",
+	"url": "https://github.com/mememelmelmel/profile-applier/releases/download/1.1.0/mememelmelmel.profile-applier-1.1.0.zip",
 	"repo": "https://mememelmelmel.github.io/profile-applier/index.json",
 	"license": "MIT",
 	"dependencies": {},
