@@ -43,7 +43,9 @@
 
 # Build artifacts (C# compiler output)
 bin/
+bin.meta
 obj/
+obj.meta
 *.csproj
 *.csproj.meta
 
