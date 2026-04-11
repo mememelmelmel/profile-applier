@@ -1,5 +1,5 @@
 #!/bin/sh
-# commit-msg hook for mememelmelmel.hair-profiles
+# commit-msg hook for mememelmelmel.profile-applier
 #
 # 1. Conventional Commits — validates message format: <type>[scope]: <description>
 
